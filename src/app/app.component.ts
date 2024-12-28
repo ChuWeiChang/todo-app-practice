@@ -11,7 +11,7 @@ import {LoginStateService} from './login-state.service';
     <div>
       <button routerLink="/login" [disabled]="isLoggedIn()">Go to Login</button>
       <button routerLink="/dashboard" [disabled]="!isLoggedIn()">Go to Dashboard</button>
-      <button routerLink="/todo-list" [disabled]="!isLoggedIn()">Go to Todo List</button>
+      <button routerLink="/add-list" [disabled]="!isLoggedIn()">Go to Add-List</button>
     </div>
     <router-outlet></router-outlet>
     `,
