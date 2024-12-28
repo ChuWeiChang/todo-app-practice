@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
 
@@ -7,6 +7,7 @@ import {HttpClient} from '@angular/common/http';
   imports: [
     ReactiveFormsModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template:`
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <label for="user">user: </label>
