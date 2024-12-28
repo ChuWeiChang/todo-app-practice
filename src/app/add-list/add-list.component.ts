@@ -72,7 +72,6 @@ export class AddListComponent {
   }
 
   onSubmit(): void {
-    console.log("fewfewf");
     const payload = this.todoListForm.value;
     this.http.post('/api/add', payload).subscribe({
       next: (response) => {
