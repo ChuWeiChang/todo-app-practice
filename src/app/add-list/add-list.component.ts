@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
-  selector: 'app-todo-list',
+  selector: 'app-add-list',
   imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template:``
 })
-export class TodoListComponent {
+export class AddListComponent {
 
 }
