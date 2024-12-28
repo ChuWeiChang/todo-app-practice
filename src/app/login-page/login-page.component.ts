@@ -1,6 +1,9 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
+import {MatDialog, MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
+import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
+import {MatButton} from '@angular/material/button';
 
 @Component({
   selector: 'app-login-page',
@@ -21,6 +24,8 @@ import {HttpClient} from '@angular/common/http';
 export class LoginPageComponent {
   private formBuilder = inject(FormBuilder);
   private http=inject(HttpClient)
+  private dialog = inject(MatDialog);
+
   loginForm = this.formBuilder.group({
     user: ['', [Validators.required]],
     password: ['', [Validators.required]],
@@ -30,12 +35,45 @@ export class LoginPageComponent {
     this.http.post('/api/login', formData).subscribe({
       next: (response) => {
         console.log('Login successful:', response);
-        alert('Login successful!');
+        this.openDialog(true);
       },
       error: (err) => {
         console.error('Login failed:', err);
-        alert('Login failed! Please check your username and password.');
+        this.openDialog(false);
       }
     });
   }
+  openDialog(loginSuccess:boolean): void {
+    const title = loginSuccess ? 'Login Successful' : 'Login Failed';
+    const message = loginSuccess? 'Login Successful!' : 'Invalid username or password. Please try again.';
+    this.dialog.open(LoginDialogComponent, {
+      data: {
+        title: title,
+        message: message,
+      },
+    });
+  }
+}
+
+@Component({
+  selector: 'app-login-dialog',
+  template: `
+    <h2 mat-dialog-title>{{ data.title }}</h2>
+    <mat-dialog-content>
+      <p>{{ data.message }}</p>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-button (click)="dialogRef.close()">Close</button>
+    </mat-dialog-actions>
+  `,
+  imports: [
+    MatDialogContent,
+    MatDialogActions,
+    MatButton,
+    MatDialogTitle
+  ]
+})
+export class LoginDialogComponent {
+  dialogRef = inject<DialogRef<string>>(DialogRef<string>);
+  data = inject(DIALOG_DATA);
 }
