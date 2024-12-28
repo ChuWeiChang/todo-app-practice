@@ -4,7 +4,13 @@ import {HttpClient} from '@angular/common/http';
 import {MatDialog, MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
 import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
 import {MatButton} from '@angular/material/button';
+import {LoginStateService} from '../login-state.service';
+import { Router } from '@angular/router';
 
+interface LoginResponse {
+  message: string;
+  sessionKey?: string;
+}
 @Component({
   selector: 'app-login-page',
   imports: [
@@ -25,6 +31,8 @@ export class LoginPageComponent {
   private formBuilder = inject(FormBuilder);
   private http=inject(HttpClient)
   private dialog = inject(MatDialog);
+  private router = inject(Router);
+  loginStateService = inject(LoginStateService)
 
   loginForm = this.formBuilder.group({
     user: ['', [Validators.required]],
@@ -32,13 +40,16 @@ export class LoginPageComponent {
   });
   onSubmit() {
     const formData = this.loginForm.value;
-    this.http.post('/api/login', formData).subscribe({
+    this.http.post<LoginResponse>('/api/login', formData).subscribe({
       next: (response) => {
-        console.log('Login successful:', response);
         this.openDialog(true);
+        this.loginStateService.LoggedIn.set(true);
+        if (response.sessionKey != null) {
+          this.loginStateService.sessionKey.set(response.sessionKey);
+        }
+        this.router.navigate(['/dashboard']).then();
       },
-      error: (err) => {
-        console.error('Login failed:', err);
+      error: () => {
         this.openDialog(false);
       }
     });
