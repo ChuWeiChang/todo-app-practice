@@ -4,14 +4,9 @@ interface LoginRequest {
   user: string;
   password: string;
 }
-interface RegisterRequest {
-  title:string;
-  deadline:string;
-  finish:boolean;
-  priority:number;
-}
-let sessionKey = 'Bearer 12345678';
 
+let sessionKey = 'Bearer 12345678';
+let todoListItems: any;
 
 export const handlers = [
 
@@ -34,41 +29,43 @@ export const handlers = [
         console.log('Login failed');
         return HttpResponse.json(
           { error: 'Invalid username or password' },
-          { status: 401 } // Simulate an HTTP 401 Unauthorized response
+          { status: 401 }
         );
       }
+    }catch (error) {
+      console.error('Failed to parse JSON:', error);
+      return HttpResponse.json(
+        { error: 'Invalid request data' },
+        { status: 400 }
+      );
+    }
+  }),
+  http.post('/api/add', async ({ request }) => {
+    try {
+      const body = await request.json();  //would probably crash if additional field provided
+      const authHeader = request.headers.get('Authorization');
+      console.log('authHeader', authHeader);
+      console.log('body', body);
+      todoListItems = body;
+
+      console.log('Updated todoListItems:', todoListItems);
+      if (authHeader !== sessionKey) {
+        return HttpResponse.json(
+          {},
+          { status: 401 }
+        );
+      }
+      return HttpResponse.json(
+        {message:"added todo list"}
+      );
+
     }catch (error) {
       // Handle error if the body cannot be parsed as JSON
       console.error('Failed to parse JSON:', error);
       return HttpResponse.json(
         { error: 'Invalid request data' },
-        { status: 400 } // Return a 400 Bad Request if parsing fails
+        { status: 400 }
       );
     }
   }),
-  // http.post('/api/add', async ({ request }) => {
-  //   try {
-  //     const body:RegisterRequest = (await request.json()) as RegisterRequest;  //would probably crash if additional field provided
-  //     const authHeader = request.headers.get('Authorization');
-  //     const { title, deadline, finish, priority } = body;
-  //
-  //     if (user === 'user' && password === 'password') {
-  //       console.log('Login successful');
-  //       return HttpResponse.json({ message: 'Login successful', sessionKey: "123" });
-  //     } else {
-  //       console.log('Login failed');
-  //       return HttpResponse.json(
-  //         { error: 'Invalid username or password' },
-  //         { status: 401 } // Simulate an HTTP 401 Unauthorized response
-  //       );
-  //     }
-  //   }catch (error) {
-  //     // Handle error if the body cannot be parsed as JSON
-  //     console.error('Failed to parse JSON:', error);
-  //     return HttpResponse.json(
-  //       { error: 'Invalid request data' },
-  //       { status: 400 } // Return a 400 Bad Request if parsing fails
-  //     );
-  //   }
-  // }),
 ]

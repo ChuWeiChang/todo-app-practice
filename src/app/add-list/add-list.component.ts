@@ -78,7 +78,6 @@ export class AddListComponent {
     this.http.post('/api/add', payload,{headers}).subscribe({
       next: (response) => {
         console.log('Form submitted successfully:', response);
-        this.todoListForm.reset();
       },
       error: (error) => {
         console.error('Error submitting form:', error);
