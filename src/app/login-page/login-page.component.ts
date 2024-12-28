@@ -49,6 +49,7 @@ export class LoginPageComponent {
         }
       },
       err => {
+        console.log(err);
         this.openDialog(false);
       }
     );
