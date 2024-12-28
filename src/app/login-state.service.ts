@@ -5,4 +5,5 @@ import {Injectable, signal} from '@angular/core';
 })
 export class LoginStateService {
   LoggedIn = signal(false);
+  sessionKey = signal('');
 }

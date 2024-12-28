@@ -26,8 +26,16 @@ export class LoginPageComponent {
     password: ['', [Validators.required]],
   });
   onSubmit() {
-    this.http.post('/api/login', []).subscribe(config => {
-      console.log('Updated config:', config);
+    const formData = this.loginForm.value;
+    this.http.post('/api/login', formData).subscribe({
+      next: (response) => {
+        console.log('Login successful:', response);
+        alert('Login successful!');
+      },
+      error: (err) => {
+        console.error('Login failed:', err);
+        alert('Login failed! Please check your username and password.');
+      }
     });
   }
 }
