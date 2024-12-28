@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormArray, FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {LoginStateService} from '../login-state.service';
 
 @Component({
   selector: 'app-add-list',
@@ -49,7 +50,7 @@ import {HttpClient} from '@angular/common/http';
 export class AddListComponent {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
-
+  loginState = inject(LoginStateService);
   todoListForm = this.fb.group({
     todoListItems: this.fb.array([])
   })
@@ -73,7 +74,8 @@ export class AddListComponent {
 
   onSubmit(): void {
     const payload = this.todoListForm.value;
-    this.http.post('/api/add', payload).subscribe({
+    const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
+    this.http.post('/api/add', payload,{headers}).subscribe({
       next: (response) => {
         console.log('Form submitted successfully:', response);
         this.todoListForm.reset();
