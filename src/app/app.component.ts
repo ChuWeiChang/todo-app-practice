@@ -4,8 +4,15 @@ import {RouterLink, RouterOutlet} from '@angular/router';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  template:
+    `
+    <div>
+      <button routerLink="/login">Go to Login</button>
+      <button routerLink="/dashboard">Go to Dashboard</button>
+      <button routerLink="/todo-list">Go to Todo List</button>
+    </div>
+    <router-outlet></router-outlet>
+    `,
 })
 export class AppComponent {
   title = 'todo-app';
