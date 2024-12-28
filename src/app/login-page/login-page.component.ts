@@ -7,10 +7,6 @@ import {MatButton} from '@angular/material/button';
 import {LoginStateService} from '../login-state.service';
 import { Router } from '@angular/router';
 
-interface LoginResponse {
-  message: string;
-  sessionKey?: string;
-}
 @Component({
   selector: 'app-login-page',
   imports: [
@@ -40,19 +36,22 @@ export class LoginPageComponent {
   });
   onSubmit() {
     const formData = this.loginForm.value;
-    this.http.post<LoginResponse>('/api/login', formData).subscribe({
-      next: (response) => {
-        this.openDialog(true);
-        this.loginStateService.LoggedIn.set(true);
-        if (response.sessionKey != null) {
-          this.loginStateService.sessionKey.set(response.sessionKey);
+    this.http.post('/api/login', formData,{observe: 'response'}).subscribe(
+      res =>{
+        if (res.status === 200) {
+          this.openDialog(true);
+          this.loginStateService.LoggedIn.set(true);
+          let sessionKey = res.headers.get('Authorization');
+          if (sessionKey != null) {
+            this.loginStateService.sessionKey.set(sessionKey);
+          }
+          this.router.navigate(['/dashboard']).then();
         }
-        this.router.navigate(['/dashboard']).then();
       },
-      error: () => {
+      err => {
         this.openDialog(false);
       }
-    });
+    );
   }
   openDialog(loginSuccess:boolean): void {
     const title = loginSuccess ? 'Login Successful' : 'Login Failed';
