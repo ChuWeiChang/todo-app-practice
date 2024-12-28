@@ -15,9 +15,9 @@ import {HttpClient} from '@angular/common/http';
         <button type="submit" [disabled]="!todoListForm.valid">Submit</button>
         <div class="form-container">
           <div formArrayName="todoListItems">
-          @for(item of todoListItems.controls; let i = $index ;track i){
+          @for(item of todoListItems.controls; let i = $index ;track item){
             <div [formGroupName]="i">
-              <label for="title-{{ i }}">Title: </label>
+              <label for="title-{{ i }}">Title:</label>
               <input id="title-{{ i }}" type="text" formControlName="title">
 
               <label for="deadline-{{ i }}">Deadline: </label>
