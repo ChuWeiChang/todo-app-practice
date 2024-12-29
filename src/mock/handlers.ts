@@ -40,7 +40,7 @@ export const handlers = [
       );
     }
   }),
-  http.post('/api/add', async ({ request }) => {
+  http.post('/api/update', async ({ request }) => {
     try {
       const body = await request.json();  //would probably crash if additional field provided
       const authHeader = request.headers.get('Authorization');
@@ -58,7 +58,6 @@ export const handlers = [
       return HttpResponse.json(
         {message:"added todo list"}
       );
-
     }catch (error) {
       // Handle error if the body cannot be parsed as JSON
       console.error('Failed to parse JSON:', error);
@@ -68,4 +67,28 @@ export const handlers = [
       );
     }
   }),
+
+  http.get('api/list', async (request) => {
+    try {
+      const authHeader = request.request.headers.get('Authorization');
+      console.log('authHeader', authHeader);
+
+      console.log('Updated todoListItems:', todoListItems);
+      if (authHeader !== sessionKey) {
+        return HttpResponse.json(
+          {},
+          { status: 401 }
+        );
+      }
+      return HttpResponse.json(
+        {todoListItems}
+      );
+    }catch (error) {
+      console.error('server died: ', error);
+      return HttpResponse.json(
+        { error: 'Server crash' },
+        { status: 500 }
+      );
+    }
+  })
 ]
