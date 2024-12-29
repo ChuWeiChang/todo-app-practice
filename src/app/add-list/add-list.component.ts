@@ -82,7 +82,7 @@ export class AddListComponent implements OnInit {
   addItem(){
     const todoListItem = this.fb.group({
       title: ['', [Validators.required]],
-      deadline: [new Date().toString(), [Validators.required]],
+      deadline: [new Date().toISOString().slice(0, 16), [Validators.required]],
       finished: [false],
       priority: [0, [Validators.required]],
     });

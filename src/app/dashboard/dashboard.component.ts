@@ -26,6 +26,7 @@ export interface TodoListItem {
 }
 
 
+// noinspection AngularUnusedComponentImport
 @Component({
   selector: 'app-dashboard',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -96,10 +97,14 @@ export class DashboardComponent implements OnInit{
   }
   quickAdd() {
     const title = 'Quick add';
-    this.dialog.open(QuickAddComponent, {
+    const dialogRef =this.dialog.open(QuickAddComponent, {
       data: {
         title: title,
+        sessionKey: this.loginState.sessionKey()
       },
+    });
+    dialogRef.afterClosed().subscribe(() => {
+      this.dataSource.updateData();
     });
   }
 
@@ -158,20 +163,21 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
     <h2 mat-dialog-title>{{ data.title }}</h2>
     <mat-dialog-content>
       <div class="form-container">
-        <div class="formGroup" [formGroup]="newTodo" (ngSubmit)="onSubmit()">
-              <label for="title">Title:</label>
-              <input id="title" type="text" formControlName="title">
+        <form class="formGroup" [formGroup]="newTodoForm" (ngSubmit)="onSubmit()">
+          <label for="title">Title:</label>
+          <input id="title" type="text" formControlName="title">
 
-              <label for="deadline">Deadline: </label>
-              <input id="deadline" type="datetime-local" formControlName="deadline">
+          <label for="deadline">Deadline: </label>
+          <input id="deadline" type="datetime-local" formControlName="deadline">
 
-              <label for="finished">Finished: </label>
-              <input id="finished" type="checkbox" formControlName="finished">
+          <label for="finished">Finished: </label>
+          <input id="finished" type="checkbox" formControlName="finished">
 
-              <label for="priority">Priority: </label>
-              <input id="priority" type="number" formControlName="priority" min="0">
-          <button type="submit">Add Todo</button>
-        </div>
+          <label for="priority">Priority: </label>
+          <input id="priority" type="number" formControlName="priority" min="0">
+
+          <button type="submit" [disabled]="!newTodoForm.valid">Add Todo</button>
+        </form>
       </div>
     </mat-dialog-content>
     <mat-dialog-actions>
@@ -190,15 +196,32 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
 export class QuickAddComponent {
   dialogRef = inject<DialogRef<string>>(DialogRef<string>);
   data = inject(DIALOG_DATA);
-  fb = inject(FormBuilder)
-  newTodo = this.fb.group({
+  fb = inject(FormBuilder);
+  http = inject(HttpClient);
+  newTodoForm = this.fb.group({
     title: ['', [Validators.required]],
-    deadline: [new Date().toString(), [Validators.required]],
+    deadline: [new Date().toISOString().slice(0, 16), [Validators.required]],
     finished: [false],
     priority: [0, [Validators.required]],
   });
   onSubmit(){
-
+    const formData = this.newTodoForm.value;
+    const headers = new HttpHeaders().set('Authorization', this.data.sessionKey);
+    this.http.post('/api/append-list', formData, { headers}).subscribe({
+      next: () => {
+        alert("successfully add new item");
+        this.newTodoForm.reset({
+          title: '',
+          deadline: new Date().toISOString().slice(0, 16),
+          finished: false,
+          priority: 0,
+        });
+      },
+      error: (err) => {
+        alert("add new item failed");
+        console.error('Error adding new item:', err);
+      },
+    });
   }
 
 }
