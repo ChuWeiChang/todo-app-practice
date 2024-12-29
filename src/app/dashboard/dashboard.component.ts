@@ -83,6 +83,7 @@ export class DashboardComponent implements OnInit{
   ngOnInit(): void {
     if (!this.loginState.LoggedIn()) {
       this.router.navigate(['/login']).then();
+      return;
     }
     this.dataSource.updateData();
   }
