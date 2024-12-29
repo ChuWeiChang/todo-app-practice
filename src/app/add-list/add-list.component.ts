@@ -20,8 +20,11 @@ interface TodoListItem {
   template:
     `
       <button type="button" (click)="addItem()">Add Row</button>
+      <br>
       <form [formGroup]="todoListForm" (ngSubmit)="onSubmit()">
+        <br>
         <button type="submit" [disabled]="!todoListForm.valid">Submit</button>
+        <br>
         <div class="form-container">
           <div formArrayName="todoListItems">
           @for(item of todoListItems.controls; let i = $index ;track item){

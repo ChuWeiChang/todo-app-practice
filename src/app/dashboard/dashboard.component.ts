@@ -44,6 +44,7 @@ export interface TodoListItem {
   ],
   template:`
     <button (click)="quickAdd()">Quick add todo item</button>
+    <br>
     <div class="dashboard-container">
       <table cdk-table [dataSource]="dataSource">
 

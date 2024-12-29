@@ -8,13 +8,24 @@ import {LoginStateService} from './login-state.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template:
     `
-    <div>
-      <button routerLink="/login" [disabled]="isLoggedIn()">Go to Login</button>
-      <button routerLink="/dashboard" [disabled]="!isLoggedIn()">Go to Dashboard</button>
-      <button routerLink="/add-list" [disabled]="!isLoggedIn()">Go to Add-List</button>
-    </div>
-    <router-outlet></router-outlet>
+      <div class="root-container">
+        <div>
+          <button routerLink="/login" [disabled]="isLoggedIn()">Go to Login</button>
+          <button routerLink="/dashboard" [disabled]="!isLoggedIn()">Go to Dashboard</button>
+          <button routerLink="/add-list" [disabled]="!isLoggedIn()">Go to Add-List</button>
+        </div>
+        <br><br>
+        <router-outlet></router-outlet>
+      </div>
     `,
+  styles: `
+    .root-container {
+      position: absolute;
+      top:10%;
+      left:30%;
+      width:70vw;
+    }
+  `
 })
 export class AppComponent {
   loginStateService = inject(LoginStateService)
