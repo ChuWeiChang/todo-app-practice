@@ -114,7 +114,6 @@ export class AddListComponent implements OnInit {
               priority: [item.priority, [Validators.required]],
             });
             this.todoListItems.push(todoListItem);
-            console.log("todoListItems:",this.todoListItems);
             this.cdRef.markForCheck();
           });
         } else {
