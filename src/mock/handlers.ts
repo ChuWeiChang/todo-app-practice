@@ -4,9 +4,17 @@ interface LoginRequest {
   user: string;
   password: string;
 }
-
+interface TodoListItem {
+  title: string;
+  deadline: string;
+  finished: boolean;
+  priority: number;
+}
+interface UpdateRequestBody {
+  todoListItems: TodoListItem[];
+}
 let sessionKey = 'Bearer 12345678';
-let todoListItems: any;
+let todoListItems: any[] = [];
 
 export const handlers = [
 
@@ -42,13 +50,11 @@ export const handlers = [
   }),
   http.post('/api/update', async ({ request }) => {
     try {
-      const body = await request.json();  //would probably crash if additional field provided
+      const body: UpdateRequestBody= (await request.json()) as UpdateRequestBody;  //would probably crash if additional field provided
       const authHeader = request.headers.get('Authorization');
-      console.log('authHeader', authHeader);
-      console.log('body', body);
-      todoListItems = body;
+      todoListItems = body.todoListItems;
 
-      console.log('Updated todoListItems:', todoListItems);
+      console.log('Updated todoListItems: ', todoListItems);
       if (authHeader !== sessionKey) {
         return HttpResponse.json(
           {},
@@ -59,7 +65,6 @@ export const handlers = [
         {message:"added todo list"}
       );
     }catch (error) {
-      // Handle error if the body cannot be parsed as JSON
       console.error('Failed to parse JSON:', error);
       return HttpResponse.json(
         { error: 'Invalid request data' },
@@ -68,7 +73,7 @@ export const handlers = [
     }
   }),
 
-  http.get('api/list', async (request) => {
+  http.get('/api/list', async (request) => {
     try {
       const authHeader = request.request.headers.get('Authorization');
       console.log('authHeader', authHeader);

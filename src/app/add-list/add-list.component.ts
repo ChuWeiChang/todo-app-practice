@@ -1,8 +1,15 @@
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {LoginStateService} from '../login-state.service';
 
+
+interface TodoListItem {
+  title: string;
+  deadline: string;
+  finished: boolean;
+  priority: number;
+}
 @Component({
   selector: 'app-add-list',
   imports: [
@@ -47,15 +54,21 @@ import {LoginStateService} from '../login-state.service';
       }
   `
 })
-export class AddListComponent {
+export class AddListComponent implements OnInit {
+
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   loginState = inject(LoginStateService);
+  private cdRef = inject(ChangeDetectorRef);
   todoListForm = this.fb.group({
     todoListItems: this.fb.array([])
   })
   get todoListItems(): FormArray {
     return this.todoListForm.get('todoListItems') as FormArray;
+  }
+
+  ngOnInit(): void {
+    this.updateList()
   }
 
   addItem(){
@@ -73,14 +86,43 @@ export class AddListComponent {
   }
 
   onSubmit(): void {
-    const payload = this.todoListForm.value;
+    const payload = { todoListItems: this.todoListForm.value.todoListItems };
     const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    this.http.post('/api/update', payload,{headers}).subscribe({
+
+    this.http.post('/api/update', payload, { headers }).subscribe({
       next: (response) => {
         console.log('Form submitted successfully:', response);
       },
       error: (error) => {
         console.error('Error submitting form:', error);
+      }
+    });
+  }
+
+  updateList() {
+    const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
+    this.http.get<{ todoListItems: TodoListItem[] }>('/api/list', { headers, observe: 'response' }).subscribe({
+      next: (response) => {
+        const body = response.body;
+        if (body) {
+          this.todoListItems.clear();
+          body.todoListItems.forEach(item => {
+            const todoListItem = this.fb.group({
+              title: [item.title, [Validators.required]],
+              deadline: [item.deadline, [Validators.required]],
+              finished: [item.finished],
+              priority: [item.priority, [Validators.required]],
+            });
+            this.todoListItems.push(todoListItem);
+            console.log("todoListItems:",this.todoListItems);
+            this.cdRef.markForCheck();
+          });
+        } else {
+          console.warn('Response body is null or empty.');
+        }
+      },
+      error: (error) => {
+        console.error('Error updating list:', error);
       }
     });
   }
