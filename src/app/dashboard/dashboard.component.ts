@@ -13,6 +13,9 @@ import {
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {LoginStateService} from '../login-state.service';
 import {Router} from '@angular/router';
+import {MatDialog, MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
+import {MatButton} from '@angular/material/button';
+import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
 
 export interface TodoListItem {
   title: string;
@@ -38,6 +41,7 @@ export interface TodoListItem {
     CdkTable
   ],
   template:`
+    <button (click)="quickAdd()">Quick add todo item</button>
     <div class="dashboard-container">
       <table cdk-table [dataSource]="dataSource">
 
@@ -78,6 +82,8 @@ export interface TodoListItem {
 export class DashboardComponent implements OnInit{
   loginState = inject(LoginStateService);
   router = inject(Router);
+  private dialog = inject(MatDialog);
+
   displayedColumns: string[] = ['title', 'deadline', 'finished', 'priority'];
   dataSource = new ExampleDataSource();
   ngOnInit(): void {
@@ -87,6 +93,15 @@ export class DashboardComponent implements OnInit{
     }
     this.dataSource.updateData();
   }
+  quickAdd() {
+    const title = 'Quick add';
+    this.dialog.open(QuickAddComponent, {
+      data: {
+        title: title,
+      },
+    });
+  }
+
 }
 export class ExampleDataSource extends DataSource<TodoListItem> {
   /** Stream of data that is provided to the table. */
@@ -126,4 +141,27 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
       }
     });
   }
+}
+
+@Component({
+  selector: 'app-quick-add-panel',
+  template: `
+    <h2 mat-dialog-title>{{ data.title }}</h2>
+    <mat-dialog-content>
+      <p>{{ data.message }}</p>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+      <button mat-button (click)="dialogRef.close()">Close</button>
+    </mat-dialog-actions>
+  `,
+  imports: [
+    MatDialogContent,
+    MatDialogActions,
+    MatButton,
+    MatDialogTitle
+  ]
+})
+export class QuickAddComponent {
+  dialogRef = inject<DialogRef<string>>(DialogRef<string>);
+  data = inject(DIALOG_DATA);
 }
