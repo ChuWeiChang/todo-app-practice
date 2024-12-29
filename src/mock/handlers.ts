@@ -54,7 +54,6 @@ export const handlers = [
       const authHeader = request.headers.get('Authorization');
       todoListItems = body.todoListItems;
 
-      console.log('Updated todoListItems: ', todoListItems);
       if (authHeader !== sessionKey) {
         return HttpResponse.json(
           {},
@@ -76,9 +75,6 @@ export const handlers = [
   http.get('/api/list', async (request) => {
     try {
       const authHeader = request.request.headers.get('Authorization');
-      console.log('authHeader', authHeader);
-
-      console.log('Updated todoListItems:', todoListItems);
       if (authHeader !== sessionKey) {
         return HttpResponse.json(
           {},
