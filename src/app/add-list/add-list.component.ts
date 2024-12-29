@@ -75,7 +75,7 @@ export class AddListComponent {
   onSubmit(): void {
     const payload = this.todoListForm.value;
     const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    this.http.post('/api/add', payload,{headers}).subscribe({
+    this.http.post('/api/update', payload,{headers}).subscribe({
       next: (response) => {
         console.log('Form submitted successfully:', response);
       },
