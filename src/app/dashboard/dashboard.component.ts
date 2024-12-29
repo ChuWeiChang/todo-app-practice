@@ -151,6 +151,7 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
 
 @Component({
   selector: 'app-quick-add-panel',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatDialogContent,
     MatDialogActions,

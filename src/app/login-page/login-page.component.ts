@@ -68,6 +68,7 @@ export class LoginPageComponent {
 
 @Component({
   selector: 'app-login-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <h2 mat-dialog-title>{{ data.title }}</h2>
     <mat-dialog-content>
