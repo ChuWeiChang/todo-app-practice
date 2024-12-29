@@ -54,13 +54,34 @@ export const handlers = [
       const authHeader = request.headers.get('Authorization');
       todoListItems = body.todoListItems;
 
-      console.log('Updated todoListItems: ', todoListItems);
       if (authHeader !== sessionKey) {
         return HttpResponse.json(
           {},
           { status: 401 }
         );
       }
+      return HttpResponse.json(
+        {message:"updated todo list"}
+      );
+    }catch (error) {
+      console.error('Failed to parse JSON:', error);
+      return HttpResponse.json(
+        { error: 'Invalid request data' },
+        { status: 400 }
+      );
+    }
+  }),
+  http.post('/api/append-list', async ({ request }) => {
+    try {
+      const authHeader = request.headers.get('Authorization');
+      if (authHeader !== sessionKey) {
+        return HttpResponse.json(
+          {},
+          { status: 401 }
+        );
+      }
+      const newItem: TodoListItem= (await request.json()) as TodoListItem;  //would probably crash if additional field provided
+      todoListItems.push(newItem)
       return HttpResponse.json(
         {message:"added todo list"}
       );
@@ -76,9 +97,6 @@ export const handlers = [
   http.get('/api/list', async (request) => {
     try {
       const authHeader = request.request.headers.get('Authorization');
-      console.log('authHeader', authHeader);
-
-      console.log('Updated todoListItems:', todoListItems);
       if (authHeader !== sessionKey) {
         return HttpResponse.json(
           {},
