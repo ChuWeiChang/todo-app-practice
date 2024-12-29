@@ -36,23 +36,23 @@ export class LoginPageComponent {
   });
   onSubmit() {
     const formData = this.loginForm.value;
-    this.http.post('/api/login', formData,{observe: 'response'}).subscribe(
-      res =>{
+    this.http.post('/api/login', formData, { observe: 'response' }).subscribe({
+      next: (res) => {
         if (res.status === 200) {
           this.openDialog(true);
           this.loginStateService.LoggedIn.set(true);
-          let sessionKey = res.headers.get('Authorization');
-          if (sessionKey != null) {
+          const sessionKey = res.headers.get('Authorization');
+          if (sessionKey) {
             this.loginStateService.sessionKey.set(sessionKey);
           }
           this.router.navigate(['/dashboard']).then();
         }
       },
-      err => {
-        console.log(err);
+      error: (err) => {
+        console.error('Error during login:', err);
         this.openDialog(false);
-      }
-    );
+      },
+    });
   }
   openDialog(loginSuccess:boolean): void {
     const title = loginSuccess ? 'Login Successful' : 'Login Failed';
