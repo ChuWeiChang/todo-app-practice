@@ -16,6 +16,7 @@ import {Router} from '@angular/router';
 import {MatDialog, MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
 import {MatButton} from '@angular/material/button';
 import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
+import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 
 export interface TodoListItem {
   title: string;
@@ -145,23 +146,59 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
 
 @Component({
   selector: 'app-quick-add-panel',
+  imports: [
+    MatDialogContent,
+    MatDialogActions,
+    MatButton,
+    MatDialogTitle,
+    FormsModule,
+    ReactiveFormsModule
+  ],
   template: `
     <h2 mat-dialog-title>{{ data.title }}</h2>
     <mat-dialog-content>
-      <p>{{ data.message }}</p>
+      <div class="form-container">
+        <div class="formGroup" [formGroup]="newTodo" (ngSubmit)="onSubmit()">
+              <label for="title">Title:</label>
+              <input id="title" type="text" formControlName="title">
+
+              <label for="deadline">Deadline: </label>
+              <input id="deadline" type="datetime-local" formControlName="deadline">
+
+              <label for="finished">Finished: </label>
+              <input id="finished" type="checkbox" formControlName="finished">
+
+              <label for="priority">Priority: </label>
+              <input id="priority" type="number" formControlName="priority" min="0">
+          <button type="submit">Add Todo</button>
+        </div>
+      </div>
     </mat-dialog-content>
     <mat-dialog-actions>
       <button mat-button (click)="dialogRef.close()">Close</button>
     </mat-dialog-actions>
   `,
-  imports: [
-    MatDialogContent,
-    MatDialogActions,
-    MatButton,
-    MatDialogTitle
-  ]
+  styles:`
+    .formGroup{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+  `
 })
 export class QuickAddComponent {
   dialogRef = inject<DialogRef<string>>(DialogRef<string>);
   data = inject(DIALOG_DATA);
+  fb = inject(FormBuilder)
+  newTodo = this.fb.group({
+    title: ['', [Validators.required]],
+    deadline: [new Date().toString(), [Validators.required]],
+    finished: [false],
+    priority: [0, [Validators.required]],
+  });
+  onSubmit(){
+
+  }
+
 }
