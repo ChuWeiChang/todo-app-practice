@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 import { LoginPageComponent } from './login-page/login-page.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
-import {TodoListComponent} from './todo-list/todo-list.component';
+import {AddListComponent} from './add-list/add-list.component';
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent },
   { path: 'dashboard', component: DashboardComponent },
-  { path: 'todo-list', component: TodoListComponent },
+  { path: 'add-list', component: AddListComponent },
 ];

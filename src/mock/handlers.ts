@@ -4,6 +4,17 @@ interface LoginRequest {
   user: string;
   password: string;
 }
+interface TodoListItem {
+  title: string;
+  deadline: string;
+  finished: boolean;
+  priority: number;
+}
+interface UpdateRequestBody {
+  todoListItems: TodoListItem[];
+}
+let sessionKey = 'Bearer 12345678';
+let todoListItems: any[] = [];
 
 export const handlers = [
 
@@ -14,21 +25,75 @@ export const handlers = [
 
       if (user === 'user' && password === 'password') {
         console.log('Login successful');
-        return HttpResponse.json({ message: 'Login successful', sessionKey: "123" });
+        return HttpResponse.json(
+          { message: 'Login successful' },
+          {
+            headers: {
+              'Authorization': sessionKey,
+            },
+          }
+        );
       } else {
         console.log('Login failed');
         return HttpResponse.json(
           { error: 'Invalid username or password' },
-          { status: 401 } // Simulate an HTTP 401 Unauthorized response
+          { status: 401 }
         );
       }
     }catch (error) {
-      // Handle error if the body cannot be parsed as JSON
       console.error('Failed to parse JSON:', error);
       return HttpResponse.json(
         { error: 'Invalid request data' },
-        { status: 400 } // Return a 400 Bad Request if parsing fails
+        { status: 400 }
       );
     }
   }),
+  http.post('/api/update', async ({ request }) => {
+    try {
+      const body: UpdateRequestBody= (await request.json()) as UpdateRequestBody;  //would probably crash if additional field provided
+      const authHeader = request.headers.get('Authorization');
+      todoListItems = body.todoListItems;
+
+      console.log('Updated todoListItems: ', todoListItems);
+      if (authHeader !== sessionKey) {
+        return HttpResponse.json(
+          {},
+          { status: 401 }
+        );
+      }
+      return HttpResponse.json(
+        {message:"added todo list"}
+      );
+    }catch (error) {
+      console.error('Failed to parse JSON:', error);
+      return HttpResponse.json(
+        { error: 'Invalid request data' },
+        { status: 400 }
+      );
+    }
+  }),
+
+  http.get('/api/list', async (request) => {
+    try {
+      const authHeader = request.request.headers.get('Authorization');
+      console.log('authHeader', authHeader);
+
+      console.log('Updated todoListItems:', todoListItems);
+      if (authHeader !== sessionKey) {
+        return HttpResponse.json(
+          {},
+          { status: 401 }
+        );
+      }
+      return HttpResponse.json(
+        {todoListItems}
+      );
+    }catch (error) {
+      console.error('server died: ', error);
+      return HttpResponse.json(
+        { error: 'Server crash' },
+        { status: 500 }
+      );
+    }
+  })
 ]
