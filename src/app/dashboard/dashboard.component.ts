@@ -12,6 +12,7 @@ import {
 } from '@angular/cdk/table';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {LoginStateService} from '../login-state.service';
+import {Router} from '@angular/router';
 
 export interface TodoListItem {
   title: string;
@@ -75,9 +76,14 @@ export interface TodoListItem {
   `
 })
 export class DashboardComponent implements OnInit{
+  loginState = inject(LoginStateService);
+  router = inject(Router);
   displayedColumns: string[] = ['title', 'deadline', 'finished', 'priority'];
   dataSource = new ExampleDataSource();
   ngOnInit(): void {
+    if (!this.loginState.LoggedIn()) {
+      this.router.navigate(['/login']).then();
+    }
     this.dataSource.updateData();
   }
 }
@@ -103,10 +109,15 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
       next: (response) => {
         const body = response.body;
         if (body && body.todoListItems) {
-          this.dataSubject.next(body.todoListItems);
+          body.todoListItems.sort((a, b) => {
+            const deadlineA = new Date(a.deadline).getTime();
+            const deadlineB = new Date(b.deadline).getTime();
+            return deadlineA - deadlineB;
+          });
+          this.dataSubject.next(body.todoListItems.slice(0, 10));
           console.log('Fetched todoListItems:', body.todoListItems);
         } else {
-          console.log('Response body is null or empty.');
+          console.log('Response body is empty.');
         }
       },
       error: (error) => {
