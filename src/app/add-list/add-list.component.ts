@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {LoginStateService} from '../login-state.service';
 import {FetchTodoListService} from '../fetch-todo-list.service';
+import {AddTodoListService} from '../add-todo-list.service';
+import {TodoListItem} from '../item.model';
 
 @Component({
   selector: 'app-add-list',
@@ -54,10 +54,9 @@ import {FetchTodoListService} from '../fetch-todo-list.service';
 export class AddListComponent implements OnInit {
 
   private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
-  loginState = inject(LoginStateService);
   private cdRef = inject(ChangeDetectorRef);
   private FetchTodoListService = inject(FetchTodoListService);
+  private addTodoListService = inject(AddTodoListService);
 
   todoListForm = this.fb.group({
     todoListItems: this.fb.array([])
@@ -85,17 +84,16 @@ export class AddListComponent implements OnInit {
   }
 
   onSubmit(): void {
-    const payload = { todoListItems: this.todoListForm.value.todoListItems };
-    const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
+    const formData = { todoListItems: this.todoListForm.value.todoListItems as TodoListItem[]};
 
-    this.http.post('/api/update', payload, { headers }).subscribe({
+    this.addTodoListService.updateTodoItems(formData).subscribe({
       next: (response) => {
         console.log('Form submitted successfully:', response);
-        alert("successfully update items");
+        alert("Successfully updated items");
       },
       error: (error) => {
         console.error('Error submitting form:', error);
-        alert("failed to update items");
+        alert("Failed to update items");
       }
     });
   }

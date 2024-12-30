@@ -4,3 +4,6 @@ export interface TodoListItem {
   finished: boolean;
   priority: number;
 }
+export interface TodoListItemList{
+  todoListItems: TodoListItem[];
+}
