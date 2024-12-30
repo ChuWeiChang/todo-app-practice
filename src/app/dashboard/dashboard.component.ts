@@ -90,10 +90,6 @@ export class DashboardComponent implements OnInit{
   displayedColumns: string[] = ['title', 'deadline', 'finished', 'priority'];
   dataSource = new ExampleDataSource();
   ngOnInit(): void {
-    if (!this.loginState.LoggedIn()) {
-      this.router.navigate(['/login']).then();
-      return;
-    }
     this.dataSource.updateData();
   }
   quickAdd() {

@@ -74,11 +74,6 @@ export class AddListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.loginState.LoggedIn()) {
-      this.router.navigate(['/login']).then();
-      return;
-    }
-
     this.updateList()
   }
 
