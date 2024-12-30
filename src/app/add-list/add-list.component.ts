@@ -74,11 +74,6 @@ export class AddListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.loginState.LoggedIn()) {
-      this.router.navigate(['/login']).then();
-      return;
-    }
-
     this.updateList()
   }
 
@@ -103,9 +98,11 @@ export class AddListComponent implements OnInit {
     this.http.post('/api/update', payload, { headers }).subscribe({
       next: (response) => {
         console.log('Form submitted successfully:', response);
+        alert("successfully update items");
       },
       error: (error) => {
         console.error('Error submitting form:', error);
+        alert("failed to update items");
       }
     });
   }
