@@ -50,7 +50,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
     }
   `
 })
-export class QuickAddComponent {
+export class QuickAddPanelComponent {
   dialogRef = inject<DialogRef<string>>(DialogRef<string>);
   data = inject(DIALOG_DATA);
   fb = inject(FormBuilder);

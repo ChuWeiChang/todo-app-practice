@@ -10,11 +10,10 @@ import {
   CdkRow,
   CdkRowDef, CdkTable
 } from '@angular/cdk/table';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {LoginStateService} from '../login-state.service';
-import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
-import {QuickAddComponent} from '../quick-add-panel/quick-add-panel.component';
+import {QuickAddPanelComponent} from '../quick-add-panel/quick-add-panel.component';
+import {FetchTodoListService} from '../fetch-todo-list.service';
 
 export interface TodoListItem {
   title: string;
@@ -82,7 +81,6 @@ export interface TodoListItem {
 })
 export class DashboardComponent implements OnInit{
   loginState = inject(LoginStateService);
-  router = inject(Router);
   private dialog = inject(MatDialog);
 
   displayedColumns: string[] = ['title', 'deadline', 'finished', 'priority'];
@@ -92,7 +90,7 @@ export class DashboardComponent implements OnInit{
   }
   quickAdd() {
     const title = 'Quick add';
-    const dialogRef =this.dialog.open(QuickAddComponent, {
+    const dialogRef =this.dialog.open(QuickAddPanelComponent, {
       data: {
         title: title,
         sessionKey: this.loginState.sessionKey()
@@ -108,9 +106,7 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
   /** Stream of data that is provided to the table. */
   private dataSubject = new BehaviorSubject<TodoListItem[]>([]);
   data = this.dataSubject.asObservable();
-
-  loginState = inject(LoginStateService);
-  http = inject(HttpClient);
+  private FetchTodoListService = inject(FetchTodoListService);
 
   /** Connect function called by the table to retrieve one stream containing the data to render. */
   connect(): Observable<TodoListItem[]> {
@@ -121,21 +117,16 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
 
   /** Update the data by fetching from the API */
   updateData() {
-    const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    this.http.get<{ todoListItems: TodoListItem[] }>('/api/list', { headers, observe: 'response' }).subscribe({
-      next: (response) => {
-        const body = response.body;
-        if (body && body.todoListItems) {
-          body.todoListItems.sort((a, b) => {
-            const deadlineA = new Date(a.deadline).getTime();
-            const deadlineB = new Date(b.deadline).getTime();
-            return deadlineA - deadlineB;
-          });
-          this.dataSubject.next(body.todoListItems.slice(0, 10));
-          console.log('Fetched todoListItems:', body.todoListItems);
-        } else {
-          console.log('Response body is empty.');
-        }
+    this.FetchTodoListService.updateList().subscribe({
+      next: (todoListItems) => {
+        todoListItems.sort((a, b) => {
+          const deadlineA = new Date(a.deadline).getTime();
+          const deadlineB = new Date(b.deadline).getTime();
+          return deadlineA - deadlineB;
+        });
+
+        this.dataSubject.next(todoListItems.slice(0, 10));
+        console.log('Fetched todoListItems:', todoListItems);
       },
       error: (error) => {
         console.error('Error updating list:', error);
