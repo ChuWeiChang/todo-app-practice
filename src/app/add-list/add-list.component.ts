@@ -2,15 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} f
 import {FormArray, FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {LoginStateService} from '../login-state.service';
-import {Router} from '@angular/router';
 
-
-interface TodoListItem {
-  title: string;
-  deadline: string;
-  finished: boolean;
-  priority: number;
-}
 @Component({
   selector: 'app-add-list',
   imports: [
@@ -64,7 +56,6 @@ export class AddListComponent implements OnInit {
   private http = inject(HttpClient);
   loginState = inject(LoginStateService);
   private cdRef = inject(ChangeDetectorRef);
-  router = inject(Router);
 
   todoListForm = this.fb.group({
     todoListItems: this.fb.array([])

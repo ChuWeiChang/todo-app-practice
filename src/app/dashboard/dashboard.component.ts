@@ -15,14 +15,6 @@ import {MatDialog} from '@angular/material/dialog';
 import {QuickAddPanelComponent} from '../quick-add-panel/quick-add-panel.component';
 import {FetchTodoListService} from '../fetch-todo-list.service';
 
-export interface TodoListItem {
-  title: string;
-  deadline: string;
-  finished: boolean;
-  priority: number;
-}
-
-
 // noinspection AngularUnusedComponentImport
 @Component({
   selector: 'app-dashboard',

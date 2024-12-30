@@ -2,7 +2,6 @@ import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {LoginStateService} from './login-state.service';
 import {Observable} from 'rxjs';
-import {TodoListItem} from './dashboard/dashboard.component';
 
 @Injectable({
   providedIn: 'root'
