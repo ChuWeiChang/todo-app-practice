@@ -11,8 +11,8 @@ export class FetchTodoListService {
   private http = inject(HttpClient);
   private loginState = inject(LoginStateService);
 
-  updateList(): Observable<TodoListItem[]> {
+  updateList(): Observable<{todoListItems: TodoListItem[]}> {
     const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    return this.http.get<TodoListItem[]>('/api/list', { headers });
+    return this.http.get<{todoListItems: TodoListItem[]}>('/api/list', { headers });
   }
 }

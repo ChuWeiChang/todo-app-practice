@@ -118,14 +118,15 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
   /** Update the data by fetching from the API */
   updateData() {
     this.FetchTodoListService.updateList().subscribe({
-      next: (todoListItems) => {
+      next: (response) => {
+        const todoListItems = response.todoListItems;
         todoListItems.sort((a, b) => {
           const deadlineA = new Date(a.deadline).getTime();
           const deadlineB = new Date(b.deadline).getTime();
           return deadlineA - deadlineB;
         });
-
         this.dataSubject.next(todoListItems.slice(0, 10));
+
         console.log('Fetched todoListItems:', todoListItems);
       },
       error: (error) => {
