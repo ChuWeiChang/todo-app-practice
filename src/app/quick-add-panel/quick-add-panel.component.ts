@@ -3,7 +3,8 @@ import {MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/mater
 import {MatButton} from '@angular/material/button';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
-import {AddTodoListService, TodoFormData} from '../add-todo-list.service';
+import {AddTodoListService} from '../add-todo-list.service';
+import {TodoListItem} from '../item.model';
 
 @Component({
   selector: 'app-quick-add-panel',
@@ -63,7 +64,7 @@ export class QuickAddPanelComponent {
     priority: [0, [Validators.required]],
   });
   onSubmit(){
-    const formData: TodoFormData = (this.newTodoForm.value) as TodoFormData;
+    const formData: TodoListItem = (this.newTodoForm.value) as TodoListItem;
 
     this.addTodoListService.appendTodoItem(formData).subscribe({
       next: () => {
