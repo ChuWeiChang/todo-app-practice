@@ -3,7 +3,7 @@ import {MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/mater
 import {MatButton} from '@angular/material/button';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {AddTodoListService, TodoFormData} from '../add-todo-list.service';
 
 @Component({
   selector: 'app-quick-add-panel',
@@ -54,7 +54,8 @@ export class QuickAddPanelComponent {
   dialogRef = inject<DialogRef<string>>(DialogRef<string>);
   data = inject(DIALOG_DATA);
   fb = inject(FormBuilder);
-  http = inject(HttpClient);
+  addTodoListService = inject(AddTodoListService);
+
   newTodoForm = this.fb.group({
     title: ['', [Validators.required]],
     deadline: [new Date().toISOString().slice(0, 16), [Validators.required]],
@@ -62,9 +63,9 @@ export class QuickAddPanelComponent {
     priority: [0, [Validators.required]],
   });
   onSubmit(){
-    const formData = this.newTodoForm.value;
-    const headers = new HttpHeaders().set('Authorization', this.data.sessionKey);
-    this.http.post('/api/append-list', formData, { headers}).subscribe({
+    const formData: TodoFormData = (this.newTodoForm.value) as TodoFormData;
+
+    this.addTodoListService.appendTodoItem(formData).subscribe({
       next: () => {
         alert("successfully add new item");
         this.newTodoForm.reset({
