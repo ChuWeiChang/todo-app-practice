@@ -10,8 +10,7 @@ import {TodoListItem} from '../item.model';
     ReactiveFormsModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template:
-    `
+  template:`
       <button type="button" (click)="addItem()">Add Row</button>
       <br>
       <form [formGroup]="todoListForm" (ngSubmit)="onSubmit()">
@@ -41,8 +40,7 @@ import {TodoListItem} from '../item.model';
         </div>
       </form>
   `,
-  styles:
-    `
+  styles:`
       .form-container{
         display: flex;
         flex-direction: column;
