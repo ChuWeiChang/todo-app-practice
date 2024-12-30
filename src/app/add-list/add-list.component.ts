@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} f
 import {FormArray, FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {LoginStateService} from '../login-state.service';
-import {TodoListItem} from '../item.model';
+import {FetchTodoListService} from '../fetch-todo-list.service';
 
 @Component({
   selector: 'app-add-list',
@@ -57,6 +57,7 @@ export class AddListComponent implements OnInit {
   private http = inject(HttpClient);
   loginState = inject(LoginStateService);
   private cdRef = inject(ChangeDetectorRef);
+  private FetchTodoListService = inject(FetchTodoListService);
 
   todoListForm = this.fb.group({
     todoListItems: this.fb.array([])
@@ -100,13 +101,12 @@ export class AddListComponent implements OnInit {
   }
 
   updateList() {
-    const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    this.http.get<{ todoListItems: TodoListItem[] }>('/api/list', { headers, observe: 'response' }).subscribe({
+    this.FetchTodoListService.updateList().subscribe({
       next: (response) => {
-        const body = response.body;
-        if (body) {
+        const todoListItems = response.todoListItems;
+        if (todoListItems !== null) {
           this.todoListItems.clear();
-          body.todoListItems.forEach(item => {
+          todoListItems.forEach(item => {
             const todoListItem = this.fb.group({
               title: [item.title, [Validators.required]],
               deadline: [item.deadline, [Validators.required]],
@@ -117,7 +117,7 @@ export class AddListComponent implements OnInit {
             this.cdRef.markForCheck();
           });
         } else {
-          console.warn('Response body is null or empty.');
+          console.log('Response body is null');
         }
       },
       error: (error) => {
