@@ -10,21 +10,11 @@ import {
   CdkRow,
   CdkRowDef, CdkTable
 } from '@angular/cdk/table';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {LoginStateService} from '../login-state.service';
-import {Router} from '@angular/router';
-import {MatDialog, MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
-import {MatButton} from '@angular/material/button';
-import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
-import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-
-export interface TodoListItem {
-  title: string;
-  deadline: string;
-  finished: boolean;
-  priority: number;
-}
-
+import {MatDialog} from '@angular/material/dialog';
+import {QuickAddPanelComponent} from '../quick-add-panel/quick-add-panel.component';
+import {FetchTodoListService} from '../fetch-todo-list.service';
+import {TodoListItem} from '../item.model';
 
 // noinspection AngularUnusedComponentImport
 @Component({
@@ -84,7 +74,6 @@ export interface TodoListItem {
 })
 export class DashboardComponent implements OnInit{
   loginState = inject(LoginStateService);
-  router = inject(Router);
   private dialog = inject(MatDialog);
 
   displayedColumns: string[] = ['title', 'deadline', 'finished', 'priority'];
@@ -94,7 +83,7 @@ export class DashboardComponent implements OnInit{
   }
   quickAdd() {
     const title = 'Quick add';
-    const dialogRef =this.dialog.open(QuickAddComponent, {
+    const dialogRef =this.dialog.open(QuickAddPanelComponent, {
       data: {
         title: title,
         sessionKey: this.loginState.sessionKey()
@@ -110,9 +99,7 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
   /** Stream of data that is provided to the table. */
   private dataSubject = new BehaviorSubject<TodoListItem[]>([]);
   data = this.dataSubject.asObservable();
-
-  loginState = inject(LoginStateService);
-  http = inject(HttpClient);
+  private FetchTodoListService = inject(FetchTodoListService);
 
   /** Connect function called by the table to retrieve one stream containing the data to render. */
   connect(): Observable<TodoListItem[]> {
@@ -123,21 +110,17 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
 
   /** Update the data by fetching from the API */
   updateData() {
-    const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    this.http.get<{ todoListItems: TodoListItem[] }>('/api/list', { headers, observe: 'response' }).subscribe({
+    this.FetchTodoListService.updateList().subscribe({
       next: (response) => {
-        const body = response.body;
-        if (body && body.todoListItems) {
-          body.todoListItems.sort((a, b) => {
-            const deadlineA = new Date(a.deadline).getTime();
-            const deadlineB = new Date(b.deadline).getTime();
-            return deadlineA - deadlineB;
-          });
-          this.dataSubject.next(body.todoListItems.slice(0, 10));
-          console.log('Fetched todoListItems:', body.todoListItems);
-        } else {
-          console.log('Response body is empty.');
-        }
+        const todoListItems = response.todoListItems;
+        todoListItems.sort((a, b) => {
+          const deadlineA = new Date(a.deadline).getTime();
+          const deadlineB = new Date(b.deadline).getTime();
+          return deadlineA - deadlineB;
+        });
+        this.dataSubject.next(todoListItems.slice(0, 10));
+
+        console.log('Fetched todoListItems:', todoListItems);
       },
       error: (error) => {
         console.error('Error updating list:', error);
@@ -146,80 +129,4 @@ export class ExampleDataSource extends DataSource<TodoListItem> {
   }
 }
 
-@Component({
-  selector: 'app-quick-add-panel',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatDialogContent,
-    MatDialogActions,
-    MatButton,
-    MatDialogTitle,
-    FormsModule,
-    ReactiveFormsModule
-  ],
-  template: `
-    <h2 mat-dialog-title>{{ data.title }}</h2>
-    <mat-dialog-content>
-      <div class="form-container">
-        <form class="formGroup" [formGroup]="newTodoForm" (ngSubmit)="onSubmit()">
-          <label for="title">Title:</label>
-          <input id="title" type="text" formControlName="title">
 
-          <label for="deadline">Deadline: </label>
-          <input id="deadline" type="datetime-local" formControlName="deadline">
-
-          <label for="finished">Finished: </label>
-          <input id="finished" type="checkbox" formControlName="finished">
-
-          <label for="priority">Priority: </label>
-          <input id="priority" type="number" formControlName="priority" min="0">
-
-          <button type="submit" [disabled]="!newTodoForm.valid">Add Todo</button>
-        </form>
-      </div>
-    </mat-dialog-content>
-    <mat-dialog-actions>
-      <button mat-button (click)="dialogRef.close()">Close</button>
-    </mat-dialog-actions>
-  `,
-  styles:`
-    .formGroup{
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-    }
-  `
-})
-export class QuickAddComponent {
-  dialogRef = inject<DialogRef<string>>(DialogRef<string>);
-  data = inject(DIALOG_DATA);
-  fb = inject(FormBuilder);
-  http = inject(HttpClient);
-  newTodoForm = this.fb.group({
-    title: ['', [Validators.required]],
-    deadline: [new Date().toISOString().slice(0, 16), [Validators.required]],
-    finished: [false],
-    priority: [0, [Validators.required]],
-  });
-  onSubmit(){
-    const formData = this.newTodoForm.value;
-    const headers = new HttpHeaders().set('Authorization', this.data.sessionKey);
-    this.http.post('/api/append-list', formData, { headers}).subscribe({
-      next: () => {
-        alert("successfully add new item");
-        this.newTodoForm.reset({
-          title: '',
-          deadline: new Date().toISOString().slice(0, 16),
-          finished: false,
-          priority: 0,
-        });
-      },
-      error: (err) => {
-        alert("add new item failed");
-        console.error('Error adding new item:', err);
-      },
-    });
-  }
-
-}

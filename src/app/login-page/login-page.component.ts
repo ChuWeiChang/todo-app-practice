@@ -1,11 +1,10 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {HttpClient} from '@angular/common/http';
-import {MatDialog, MatDialogActions, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
-import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
-import {MatButton} from '@angular/material/button';
+import {MatDialog} from '@angular/material/dialog';
 import {LoginStateService} from '../login-state.service';
 import { Router } from '@angular/router';
+import {LoginDialogComponent} from '../login-dialog/login-dialog.component';
 
 @Component({
   selector: 'app-login-page',
@@ -25,7 +24,7 @@ import { Router } from '@angular/router';
 })
 export class LoginPageComponent {
   private formBuilder = inject(FormBuilder);
-  private http=inject(HttpClient)
+  private http = inject(HttpClient)
   private dialog = inject(MatDialog);
   private router = inject(Router);
   loginStateService = inject(LoginStateService)
@@ -64,28 +63,4 @@ export class LoginPageComponent {
       },
     });
   }
-}
-
-@Component({
-  selector: 'app-login-dialog',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <h2 mat-dialog-title>{{ data.title }}</h2>
-    <mat-dialog-content>
-      <p>{{ data.message }}</p>
-    </mat-dialog-content>
-    <mat-dialog-actions>
-      <button mat-button (click)="dialogRef.close()">Close</button>
-    </mat-dialog-actions>
-  `,
-  imports: [
-    MatDialogContent,
-    MatDialogActions,
-    MatButton,
-    MatDialogTitle
-  ]
-})
-export class LoginDialogComponent {
-  dialogRef = inject<DialogRef<string>>(DialogRef<string>);
-  data = inject(DIALOG_DATA);
 }
