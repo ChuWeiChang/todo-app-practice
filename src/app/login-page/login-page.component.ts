@@ -1,10 +1,11 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {HttpClient} from '@angular/common/http';
 import {MatDialog} from '@angular/material/dialog';
 import {LoginStateService} from '../login-state.service';
 import { Router } from '@angular/router';
 import {LoginDialogComponent} from '../login-dialog/login-dialog.component';
+import {AuthModel} from '../auth.model';
+import {AuthService} from '../auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -24,7 +25,7 @@ import {LoginDialogComponent} from '../login-dialog/login-dialog.component';
 })
 export class LoginPageComponent {
   private formBuilder = inject(FormBuilder);
-  private http = inject(HttpClient)
+  private auth = inject(AuthService);
   private dialog = inject(MatDialog);
   private router = inject(Router);
   loginStateService = inject(LoginStateService)
@@ -34,25 +35,27 @@ export class LoginPageComponent {
     password: ['', [Validators.required]],
   });
   onSubmit() {
-    const formData = this.loginForm.value;
-    this.http.post('/api/login', formData, { observe: 'response' }).subscribe({
+    const formData: AuthModel = (this.loginForm.value) as AuthModel;
+    this.auth.login(formData).subscribe({
       next: (res) => {
-        if (res.status === 200) {
-          this.openDialog(true);
-          this.loginStateService.LoggedIn.set(true);
-          const sessionKey = res.headers.get('Authorization');
-          if (sessionKey) {
-            this.loginStateService.sessionKey.set(sessionKey);
-          }
-          this.router.navigate(['/dashboard']).then();
-        }
-      },
-      error: (err) => {
-        console.error('Error during login:', err);
-        this.openDialog(false);
-      },
+            if (res.status === 200) {
+              this.openDialog(true);
+              this.loginStateService.LoggedIn.set(true);
+              const sessionKey = res.headers.get('Authorization');
+              if (sessionKey) {
+                this.loginStateService.sessionKey.set(sessionKey);
+              }
+              this.router.navigate(['/dashboard']).then();
+            }
+          },
+          error: (err) => {
+            console.error('Error during login:', err);
+            this.openDialog(false);
+            this.loginForm.reset();
+          },
     });
   }
+
   openDialog(loginSuccess:boolean): void {
     const title = loginSuccess ? 'Login Successful' : 'Login Failed';
     const message = loginSuccess? 'Login Successful!' : 'Invalid username or password. Please try again.';
