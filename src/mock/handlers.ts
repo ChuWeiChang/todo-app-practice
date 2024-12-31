@@ -48,7 +48,7 @@ export const handlers = [
       );
     }
   }),
-  http.post('/api/update', async ({ request }) => {
+  http.put('/api/user/todos', async ({ request }) => {
     try {
       const body: UpdateRequestBody= (await request.json()) as UpdateRequestBody;  //would probably crash if additional field provided
       const authHeader = request.headers.get('Authorization');
@@ -71,7 +71,7 @@ export const handlers = [
       );
     }
   }),
-  http.post('/api/append-list', async ({ request }) => {
+  http.post('/api/user/todos', async ({ request }) => {
     try {
       const authHeader = request.headers.get('Authorization');
       if (authHeader !== sessionKey) {
@@ -94,7 +94,7 @@ export const handlers = [
     }
   }),
 
-  http.get('/api/list', async (request) => {
+  http.get('/api/user/todos', async (request) => {
     try {
       const authHeader = request.request.headers.get('Authorization');
       if (authHeader !== sessionKey) {

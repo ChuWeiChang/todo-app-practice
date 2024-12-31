@@ -13,6 +13,6 @@ export class FetchTodoListService {
 
   updateList(): Observable<{todoListItems: TodoListItem[]}> {
     const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    return this.http.get<{todoListItems: TodoListItem[]}>('/api/list', { headers });
+    return this.http.get<{todoListItems: TodoListItem[]}>('/api/user/todos', { headers });
   }
 }

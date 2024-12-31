@@ -6,8 +6,7 @@ import {LoginStateService} from './login-state.service';
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template:
-    `
+  template:`
       <div class="root-container">
         <div>
           <button routerLink="/login" [disabled]="isLoggedIn()">Go to Login</button>
@@ -17,8 +16,8 @@ import {LoginStateService} from './login-state.service';
         <br><br>
         <router-outlet></router-outlet>
       </div>
-    `,
-  styles: `
+  `,
+  styles:`
     .root-container {
       position: absolute;
       top:10%;

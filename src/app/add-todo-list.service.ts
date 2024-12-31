@@ -14,10 +14,10 @@ export class AddTodoListService {
 
   appendTodoItem(formData: TodoListItem): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    return this.http.post('/api/append-list', formData, { headers });
+    return this.http.post('/api/user/todos', formData, { headers });
   }
   updateTodoItems(formData: TodoListItemList): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    return this.http.post('/api/update', formData, { headers });
+    return this.http.put('/api/user/todos', formData, { headers });
   }
 }
