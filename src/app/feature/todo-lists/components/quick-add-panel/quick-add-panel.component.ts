@@ -4,7 +4,7 @@ import {MatButton} from '@angular/material/button';
 import {FormBuilder, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {DIALOG_DATA, DialogRef} from '@angular/cdk/dialog';
 import {AddTodoListService} from '../../services/add-todo-list.service';
-import {TodoListItem} from '../../../../shared/model/item.model';
+import {TodoListItem} from '../../../../shared/models/item.model';
 
 @Component({
   selector: 'app-quick-add-panel',

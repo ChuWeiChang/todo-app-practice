@@ -4,7 +4,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {LoginStateService} from '../../../../shared/services/auth/login-state.service';
 import { Router } from '@angular/router';
 import {LoginDialogComponent} from '../login-dialog/login-dialog.component';
-import {AuthModel} from '../../../../shared/model/auth.model';
+import {AuthModel} from '../../../../shared/models/auth.model';
 import {AuthService} from '../../../../shared/services/auth/auth.service';
 
 @Component({

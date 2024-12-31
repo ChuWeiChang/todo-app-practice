@@ -14,7 +14,7 @@ import {LoginStateService} from '../../../../shared/services/auth/login-state.se
 import {MatDialog} from '@angular/material/dialog';
 import {QuickAddPanelComponent} from '../quick-add-panel/quick-add-panel.component';
 import {FetchTodoListService} from '../../services/fetch-todo-list.service';
-import {TodoListItem} from '../../../../shared/model/item.model';
+import {TodoListItem} from '../../../../shared/models/item.model';
 
 // noinspection AngularUnusedComponentImport
 @Component({
