@@ -1,6 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {LoginStateService} from '../../../shared/services/auth/login-state.service';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {TodoListItem, TodoListItemList} from '../../../shared/models/item.model';
 
@@ -10,14 +9,11 @@ import {TodoListItem, TodoListItemList} from '../../../shared/models/item.model'
 export class AddTodoListService {
 
   private http = inject(HttpClient);
-  private loginState = inject(LoginStateService);
 
   appendTodoItem(formData: TodoListItem): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    return this.http.post('/api/user/todos', formData, { headers });
+    return this.http.post('/api/user/todos', formData);
   }
   updateTodoItems(formData: TodoListItemList): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', this.loginState.sessionKey());
-    return this.http.put('/api/user/todos', formData, { headers });
+    return this.http.put('/api/user/todos', formData);
   }
 }
