@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {LoginStateService} from '../login-state.service';
+import {LoginStateService} from '../../../../shared/services/auth/login-state.service';
 import { Router } from '@angular/router';
 import {LoginDialogComponent} from '../login-dialog/login-dialog.component';
-import {AuthModel} from '../auth.model';
-import {AuthService} from '../auth.service';
+import {AuthModel} from '../../../../shared/model/auth.model';
+import {AuthService} from '../../../../shared/services/auth/auth.service';
 
 @Component({
   selector: 'app-login-page',

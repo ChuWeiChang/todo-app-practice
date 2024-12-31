@@ -10,11 +10,11 @@ import {
   CdkRow,
   CdkRowDef, CdkTable
 } from '@angular/cdk/table';
-import {LoginStateService} from '../login-state.service';
+import {LoginStateService} from '../../../../shared/services/auth/login-state.service';
 import {MatDialog} from '@angular/material/dialog';
 import {QuickAddPanelComponent} from '../quick-add-panel/quick-add-panel.component';
-import {FetchTodoListService} from '../fetch-todo-list.service';
-import {TodoListItem} from '../item.model';
+import {FetchTodoListService} from '../../services/fetch-todo-list.service';
+import {TodoListItem} from '../../../../shared/model/item.model';
 
 // noinspection AngularUnusedComponentImport
 @Component({

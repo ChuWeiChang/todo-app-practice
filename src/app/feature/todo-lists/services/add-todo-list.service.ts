@@ -1,8 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {LoginStateService} from './login-state.service';
+import {LoginStateService} from '../../../shared/services/auth/login-state.service';
 import {Observable} from 'rxjs';
-import {TodoListItem, TodoListItemList} from './item.model';
+import {TodoListItem, TodoListItemList} from '../../../shared/model/item.model';
 
 @Injectable({
   providedIn: 'root'

@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
 import {RouterLink, RouterOutlet} from '@angular/router';
-import {LoginStateService} from './login-state.service';
+import {LoginStateService} from './shared/services/auth/login-state.service';
 
 @Component({
   selector: 'app-root',

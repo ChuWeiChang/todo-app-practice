@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
-import {FetchTodoListService} from '../fetch-todo-list.service';
-import {AddTodoListService} from '../add-todo-list.service';
-import {TodoListItem} from '../item.model';
+import {FetchTodoListService} from '../../services/fetch-todo-list.service';
+import {AddTodoListService} from '../../services/add-todo-list.service';
+import {TodoListItem} from '../../../../shared/model/item.model';
 
 @Component({
   selector: 'app-add-list',
